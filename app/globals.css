@@ -64,3 +64,22 @@ button { cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
+
+
+/* SHAREMEAL NGO demo: gentle animated ambient background */
+.ngo-demo-scene { background: linear-gradient(125deg, #f2f7f0 0%, #f8f8f2 38%, #edf5ef 72%, #f8f5e9 100%); }
+.ngo-demo-atmosphere { background: radial-gradient(ellipse at 15% 12%, rgba(125, 181, 137, .16), transparent 36%), radial-gradient(ellipse at 88% 32%, rgba(112, 170, 161, .14), transparent 34%), radial-gradient(ellipse at 52% 88%, rgba(205, 190, 130, .12), transparent 38%); }
+.ngo-orb { position: absolute; display: block; border-radius: 9999px; filter: blur(2px); opacity: .55; will-change: transform; }
+.ngo-orb-one { width: 340px; height: 340px; top: 8%; left: -110px; background: radial-gradient(circle at 35% 35%, rgba(113, 174, 128, .28), rgba(113, 174, 128, 0) 72%); animation: ngo-float-one 19s ease-in-out infinite alternate; }
+.ngo-orb-two { width: 430px; height: 430px; top: 34%; right: -160px; background: radial-gradient(circle at 50% 50%, rgba(102, 167, 158, .2), rgba(102, 167, 158, 0) 70%); animation: ngo-float-two 24s ease-in-out infinite alternate; }
+.ngo-orb-three { width: 300px; height: 300px; bottom: -80px; left: 34%; background: radial-gradient(circle at 50% 50%, rgba(201, 181, 119, .16), rgba(201, 181, 119, 0) 72%); animation: ngo-float-three 22s ease-in-out infinite alternate; }
+.ngo-glow-line { position: absolute; width: 65vw; height: 1px; opacity: .32; background: linear-gradient(90deg, transparent, rgba(78, 139, 99, .42), transparent); transform: rotate(-18deg); }
+.ngo-glow-line-one { top: 28%; left: -12%; animation: ngo-drift-line 18s linear infinite alternate; }
+.ngo-glow-line-two { top: 74%; right: -18%; animation: ngo-drift-line 23s linear infinite alternate-reverse; }
+@keyframes ngo-float-one { from { transform: translate3d(0, 0, 0) scale(.92); } to { transform: translate3d(100px, 65px, 0) scale(1.12); } }
+@keyframes ngo-float-two { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(-120px, -70px, 0) scale(.88); } }
+@keyframes ngo-float-three { from { transform: translate3d(-40px, 10px, 0); } to { transform: translate3d(70px, -85px, 0); } }
+@keyframes ngo-drift-line { from { translate: -5% 0; opacity: .12; } to { translate: 8% 30px; opacity: .4; } }
+@media (prefers-reduced-motion: reduce) {
+  .ngo-orb, .ngo-glow-line { animation: none !important; }
+}
