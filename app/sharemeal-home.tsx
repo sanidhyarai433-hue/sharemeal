@@ -152,7 +152,7 @@ export default function ShareMealHome() {
   const inView = { opacity: 1, y: 0 }
   const viewport = { once: true, amount: 0.16 }
 
-  return <main className="min-h-screen overflow-hidden bg-[#faf9f5] text-[#193b30]">
+  return <main className="sharemeal-atmosphere relative isolate min-h-screen overflow-hidden bg-[#faf9f5] text-[#193b30]">
     <PublicScrollEnhancer />
     <div className="bg-[#164c3b] px-4 py-2 text-center text-[10px] font-semibold tracking-[.13em] text-white/90 sm:text-xs">RESCUE FOOD <span className="mx-2 text-[#b7d1ba]">·</span> SHARE HOPE <span className="mx-2 text-[#b7d1ba]">·</span> MAKE EVERY MEAL COUNT</div>
     <header className="sticky top-0 z-30 border-b border-[#e8eae2]/70 bg-[#faf9f5]/90 backdrop-blur-xl">
