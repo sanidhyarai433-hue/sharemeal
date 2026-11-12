@@ -131,3 +131,49 @@ button { cursor: pointer; }
 .ngo-leaf-14{--leaf-left:88%;--leaf-size:13px;--leaf-rotate:71deg;--leaf-duration:26s;--leaf-delay:-17s;}
 @keyframes ngo-leaf-drift { 0%{transform:translate3d(0,-8vh,0) rotate(var(--leaf-rotate));opacity:0} 10%{opacity:.65} 50%{transform:translate3d(55px,55vh,0) rotate(calc(var(--leaf-rotate) + 160deg));opacity:.55} 90%{opacity:.35} 100%{transform:translate3d(-35px,112vh,0) rotate(calc(var(--leaf-rotate) + 330deg));opacity:0} }
 @media(prefers-reduced-motion:reduce){.ngo-leaf{animation:none!important;display:none}}
+
+
+/* More natural botanical leaves: tapered blades, layered greens and visible veins */
+.ngo-leaf {
+  width: calc(var(--leaf-size) * 1.35) !important;
+  height: var(--leaf-size) !important;
+  border-radius: 0 !important;
+  clip-path: polygon(0 100%, 7% 77%, 18% 53%, 34% 31%, 55% 13%, 100% 0%, 84% 34%, 66% 59%, 45% 79%, 22% 94%);
+  background:
+    radial-gradient(ellipse at 28% 72%, rgba(191,229,150,.72), transparent 48%),
+    radial-gradient(ellipse at 72% 22%, rgba(24,103,57,.35), transparent 52%),
+    linear-gradient(135deg, #b0d98b 0%, #5eaa62 38%, #287849 72%, #174d35 100%) !important;
+  filter: drop-shadow(1px 3px 3px rgba(0,0,0,.28)) saturate(1.12);
+  box-shadow: none !important;
+  transform-origin: 12% 88%;
+}
+.ngo-leaf::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(0 100%, 7% 77%, 18% 53%, 34% 31%, 55% 13%, 100% 0%, 84% 34%, 66% 59%, 45% 79%, 22% 94%);
+  background:
+    linear-gradient(151deg, transparent 48.5%, rgba(225,246,190,.9) 49.2%, rgba(225,246,190,.72) 50%, transparent 51.2%),
+    repeating-linear-gradient(24deg, transparent 0 8px, rgba(218,243,186,.30) 8.4px 9px, transparent 9.5px 15px);
+  opacity: .9;
+}
+.ngo-leaf::after {
+  content: "";
+  position: absolute;
+  width: 22%;
+  height: 2px;
+  left: -13%;
+  bottom: 2%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, rgba(175,133,76,.9), rgba(207,185,128,.65));
+  transform: rotate(-47deg);
+  transform-origin: right center;
+}
+@keyframes ngo-leaf-drift {
+  0% { transform: translate3d(0,-8vh,0) rotate(var(--leaf-rotate)) scale(.82); opacity:0; }
+  10% { opacity:.78; }
+  28% { transform: translate3d(34px,27vh,0) rotate(calc(var(--leaf-rotate) + 78deg)) scale(1); }
+  52% { transform: translate3d(-22px,56vh,0) rotate(calc(var(--leaf-rotate) + 185deg)) scale(.94); opacity:.72; }
+  76% { transform: translate3d(48px,84vh,0) rotate(calc(var(--leaf-rotate) + 270deg)) scale(.88); opacity:.55; }
+  100% { transform: translate3d(-18px,112vh,0) rotate(calc(var(--leaf-rotate) + 360deg)) scale(.76); opacity:0; }
+}
