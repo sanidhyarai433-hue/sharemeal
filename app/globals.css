@@ -313,7 +313,7 @@ button { cursor: pointer; }
 .sharemeal-atmosphere::before {
   content:"";
   position:fixed;
-  z-index:-1;
+  z-index:0;
   inset:-22%;
   pointer-events:none;
   background:
@@ -329,7 +329,7 @@ button { cursor: pointer; }
 .sharemeal-atmosphere::after {
   content:"";
   position:fixed;
-  z-index:-1;
+  z-index:0;
   inset:0;
   pointer-events:none;
   opacity:.25;
@@ -345,6 +345,7 @@ button { cursor: pointer; }
   70% { transform:translate3d(-1%,-2%,0) scale(1.03) rotate(-1deg); }
   100% { transform:translate3d(2%,2%,0) scale(1.08) rotate(1deg); }
 }
+.sharemeal-atmosphere > * { position:relative; z-index:1; }
 .sharemeal-atmosphere > header {
   background:rgba(250,249,245,.78) !important;
   backdrop-filter:blur(20px) saturate(1.15);
