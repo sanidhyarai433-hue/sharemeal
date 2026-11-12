@@ -299,3 +299,60 @@ button { cursor: pointer; }
  .hero-image-frame,.hero-main-image { animation:none!important; }
  .hero-image-frame::before { animation:none!important; }
 }
+
+
+/* Warm cream editorial atmosphere across the entire ShareMeal landing page */
+.sharemeal-atmosphere {
+  background:
+    radial-gradient(ellipse at 12% 18%, rgba(225,236,213,.72) 0%, transparent 34%),
+    radial-gradient(ellipse at 88% 28%, rgba(241,226,197,.52) 0%, transparent 31%),
+    radial-gradient(ellipse at 55% 82%, rgba(221,235,218,.55) 0%, transparent 38%),
+    #faf9f5 !important;
+  isolation:isolate;
+}
+.sharemeal-atmosphere::before {
+  content:"";
+  position:fixed;
+  z-index:-1;
+  inset:-22%;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse 34% 28% at 16% 28%, rgba(197,224,190,.48), transparent 72%),
+    radial-gradient(ellipse 30% 34% at 78% 22%, rgba(238,221,186,.42), transparent 72%),
+    radial-gradient(ellipse 38% 30% at 62% 78%, rgba(203,225,205,.42), transparent 72%),
+    radial-gradient(ellipse 22% 25% at 92% 66%, rgba(231,220,192,.36), transparent 72%);
+  filter:blur(34px);
+  transform:translate3d(0,0,0);
+  animation: sharemeal-cream-clouds 24s ease-in-out infinite alternate;
+  will-change:transform;
+}
+.sharemeal-atmosphere::after {
+  content:"";
+  position:fixed;
+  z-index:-1;
+  inset:0;
+  pointer-events:none;
+  opacity:.25;
+  background-image:
+    radial-gradient(circle at 12% 22%, rgba(105,143,99,.22) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 76% 68%, rgba(173,143,92,.18) 0 1px, transparent 1.8px);
+  background-size:44px 44px, 61px 61px;
+  mask-image:linear-gradient(to bottom,black,transparent 85%);
+}
+@keyframes sharemeal-cream-clouds {
+  0% { transform:translate3d(-2%,1%,0) scale(1) rotate(0deg); }
+  35% { transform:translate3d(2%,-1%,0) scale(1.06) rotate(1deg); }
+  70% { transform:translate3d(-1%,-2%,0) scale(1.03) rotate(-1deg); }
+  100% { transform:translate3d(2%,2%,0) scale(1.08) rotate(1deg); }
+}
+.sharemeal-atmosphere > header {
+  background:rgba(250,249,245,.78) !important;
+  backdrop-filter:blur(20px) saturate(1.15);
+}
+.sharemeal-atmosphere > section,
+.sharemeal-atmosphere > footer {
+  position:relative;
+}
+@media(prefers-reduced-motion:reduce) {
+  .sharemeal-atmosphere::before { animation:none!important; }
+}
