@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Bell, Check, Clock3, Leaf, LocateFixed, MapPin, Navigation, RefreshCw, Utensils } from 'lucide-react'
 
 type Point = { latitude: number; longitude: number }
-type Food = { id:string; food_name:string; category:string; quantity_kg:number; servings:number; food_type:string; pickup_deadline:string; pickup_address:string; pickup_latitude:number; pickup_longitude:number; status:string; created_at:string; distance:number }
+type Food = { id:string; food_name:string; category:string; quantity_kg:number; servings:number; food_type:string; pickup_deadline:string; pickup_address:string; pickup_latitude:number; pickup_longitude:number; status:string; created_at:string }
 type Alert = { id:string; title:string; message:string; distance_km:number|null; read_at:string|null; created_at:string }
 const supabase = createClient()
 const distance = (a:Point,b:Point) => { const r=(n:number)=>n*Math.PI/180; const d1=r(b.latitude-a.latitude),d2=r(b.longitude-a.longitude); const x=Math.sin(d1/2)**2+Math.cos(r(a.latitude))*Math.cos(r(b.latitude))*Math.sin(d2/2)**2; return 6371*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)) }
