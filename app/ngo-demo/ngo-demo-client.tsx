@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Search, MapPin, Clock3, PackageCheck, HeartHandshake, Leaf, RotateCcw, CheckCircle2, Utensils, Boxes, Truck, Navigation } from 'lucide-react'
 
@@ -14,6 +14,60 @@ const listings: Listing[] = [
 ]
 const stages = ['Requested', 'Accepted', 'Picked up', 'Delivered']
 const storageKey = 'sharemeal-ngo-demo-requests-v1'
+
+
+type DemoPoint = { id:number; name:string; donor:string; lat:number; lng:number; area:string; distance:string; kg:number; deadline:string }
+const demoPoints: DemoPoint[] = [
+ {id:1,name:'Vegetable pulao with raita',donor:'Green Bowl Kitchen',lat:12.8826,lng:74.8561,area:'Kadri, Mangaluru',distance:'2.1 km',kg:15,deadline:'Today, 8:30 PM'},
+ {id:2,name:'Fresh seasonal vegetables',donor:'Coastal Fresh Mart',lat:12.8870,lng:74.8432,area:'Bejai, Mangaluru',distance:'3.4 km',kg:10,deadline:'Today, 9:00 PM'},
+ {id:3,name:'Chapati and chana masala',donor:'Annapoorna Canteen',lat:12.8702,lng:74.8424,area:'Hampankatta, Mangaluru',distance:'4.8 km',kg:8,deadline:'Today, 7:45 PM'},
+ {id:4,name:'Bananas and papayas',donor:'Daily Harvest Store',lat:12.8738,lng:74.8580,area:'Bendoor, Mangaluru',distance:'5.2 km',kg:12,deadline:'Tomorrow, 10:00 AM'}
+]
+function LiveDemoMap({selectedMapId,onSelect}:{selectedMapId:number;onSelect:(id:number)=>void}) {
+ const mapElement=useRef<HTMLDivElement|null>(null),map=useRef<any>(null),receiverMarker=useRef<any>(null),watchId=useRef<number|null>(null)
+ const [location,setLocation]=useState<{lat:number;lng:number}|null>(null)
+ const [status,setStatus]=useState('Map ready · enable location to track your position')
+ const [tracking,setTracking]=useState(false)
+ useEffect(()=>{
+  let disposed=false
+  const init=()=>{
+   if(disposed||!mapElement.current||!(window as any).L||map.current)return
+   const L=(window as any).L
+   map.current=L.map(mapElement.current,{zoomControl:true}).setView([12.8797,74.8433],13)
+   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map.current)
+   demoPoints.forEach(point=>{const marker=L.marker([point.lat,point.lng]).addTo(map.current).bindPopup('<b>'+point.donor+'</b><br/>'+point.name+'<br/>'+point.area+' · '+point.kg+' kg');marker.on('click',()=>onSelect(point.id))})
+   setTimeout(()=>map.current?.invalidateSize(),150)
+  }
+  if(!(window as any).L){
+   if(!document.querySelector('link[data-sharemeal-leaflet]')){const css=document.createElement('link');css.rel='stylesheet';css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';css.dataset.sharemealLeaflet='true';document.head.appendChild(css)}
+   const existing=document.querySelector('script[data-sharemeal-leaflet]') as HTMLScriptElement|null
+   if(existing){existing.addEventListener('load',init);if((window as any).L)init()}
+   else{const script=document.createElement('script');script.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';script.dataset.sharemealLeaflet='true';script.onload=init;script.onerror=()=>setStatus('Map library could not load. Check your internet connection.');document.body.appendChild(script)}
+  }else init()
+  return()=>{disposed=true;if(watchId.current!==null)navigator.geolocation?.clearWatch(watchId.current);map.current?.remove();map.current=null}
+ },[onSelect])
+ function startTracking(){
+  if(!navigator.geolocation){setStatus('Your browser does not support live location.');return}
+  setStatus('Waiting for location permission…')
+  watchId.current=navigator.geolocation.watchPosition(position=>{
+   const L=(window as any).L,next={lat:position.coords.latitude,lng:position.coords.longitude}
+   setLocation(next);setTracking(true);setStatus('Live location tracking is on · accuracy about '+Math.round(position.coords.accuracy)+' m')
+   if(L&&map.current){if(!receiverMarker.current)receiverMarker.current=L.circleMarker([next.lat,next.lng],{radius:10,color:'#fff',weight:3,fillColor:'#1685e5',fillOpacity:1}).addTo(map.current).bindPopup('Your live location');else receiverMarker.current.setLatLng([next.lat,next.lng]);map.current.setView([next.lat,next.lng],14)}
+  },err=>{setStatus(err.code===1?'Location permission denied. Allow location access in your browser and retry.':'Could not get location. Check GPS and retry.');setTracking(false)},{enableHighAccuracy:true,maximumAge:3000,timeout:15000})
+ }
+ function stopTracking(){if(watchId.current!==null)navigator.geolocation.clearWatch(watchId.current);watchId.current=null;setTracking(false);setStatus('Live tracking paused.')}
+ const selected=demoPoints.find(p=>p.id===selectedMapId)??demoPoints[0]
+ const destination=selected.lat+','+selected.lng
+ const routeUrl=location?'https://www.google.com/maps/dir/?api=1&origin='+location.lat+','+location.lng+'&destination='+destination+'&travelmode=driving':'https://www.google.com/maps/search/?api=1&query='+destination
+ return <section className="mb-5 overflow-hidden rounded-2xl border border-[#dfe7dc] bg-white shadow-sm">
+  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#edf0e9] px-5 py-4"><div><p className="text-[10px] font-bold tracking-[.18em] text-[#779578]">LIVE LOCATION · DEMO MAP</p><h2 className="mt-1 text-lg font-semibold">Track your location & nearby pickups</h2><p className="mt-1 text-xs text-[#849087]">Real map tiles · live receiver GPS · sample donor pins</p></div>{!tracking?<button onClick={startTracking} className="rounded-full bg-[#176b4b] px-4 py-2.5 text-xs font-semibold text-white">◎ Start live tracking</button>:<button onClick={stopTracking} className="rounded-full border border-[#d8e2d6] px-4 py-2.5 text-xs font-semibold text-[#426b4e]">Pause tracking</button>}</div>
+  <div className="grid lg:grid-cols-[1.5fr_.8fr]"><div className="relative"><div ref={mapElement} className="h-[390px] w-full bg-[#e9eee2]"/><div className="absolute bottom-3 left-3 z-[500] rounded-xl bg-white/95 px-3 py-2 text-[10px] text-[#63766a] shadow">🔵 Your live GPS · 🟢 Sample donor locations</div></div>
+   <aside className="flex flex-col justify-between border-t border-[#edf0e9] p-5 lg:border-l lg:border-t-0"><div><span className="rounded-full bg-[#edf4eb] px-2.5 py-1 text-[10px] font-bold text-[#4d7956]">SELECTED PICKUP</span><h3 className="mt-4 text-xl font-semibold">{selected.name}</h3><p className="mt-1 text-xs text-[#849087]">{selected.donor}</p><div className="mt-5 grid grid-cols-2 gap-3"><div className="rounded-xl bg-[#f7f8f3] p-3"><p className="text-[10px] text-[#849087]">Sample distance</p><p className="mt-1 font-semibold">{selected.distance}</p></div><div className="rounded-xl bg-[#f7f8f3] p-3"><p className="text-[10px] text-[#849087]">Food quantity</p><p className="mt-1 font-semibold">{selected.kg} kg</p></div></div><p className="mt-4 flex items-center gap-2 text-xs text-[#78877d]"><MapPin size={14}/>{selected.area}</p><p className="mt-2 flex items-center gap-2 text-xs text-[#78877d]"><Clock3 size={14}/>{selected.deadline}</p><p className="mt-5 rounded-xl bg-[#f4f7f1] p-3 text-[11px] leading-5 text-[#607466]">{status}</p>{location&&<p className="mt-2 text-[10px] text-[#849087]">Your coordinates: {location.lat.toFixed(5)}, {location.lng.toFixed(5)}</p>}</div>
+    <a target="_blank" rel="noreferrer" href={routeUrl} className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#176b4b] px-4 text-xs font-semibold text-white hover:bg-[#164c3b]"><Navigation size={15}/>{location?'Navigate from my location':'Open pickup in Google Maps'} <ArrowLeft size={14} className="rotate-180"/></a>
+   </aside></div>
+  <div className="border-t border-[#edf0e9] px-5 py-3 text-[10px] leading-5 text-[#849087]">Demo note: your blue dot uses your device GPS and updates while tracking is active. Green donor pins are sample coordinates around Mangaluru, not live donor devices. Real donor tracking requires the donor to share their pickup location.</div>
+ </section>
+}
 
 export default function NgoDemoClient() {
   const [query, setQuery] = useState('')
@@ -55,31 +109,7 @@ export default function NgoDemoClient() {
       </div>
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3"><div className="flex rounded-full border border-[#e2e7dd] bg-white p-1"><button onClick={()=>setTab('discover')} className={`rounded-full px-5 py-2 text-xs font-semibold transition ${tab==='discover'?'bg-[#176b4b] text-white':'text-[#718176] hover:bg-[#f1f5ef]'}`}>Discover food</button><button onClick={()=>setTab('requests')} className={`rounded-full px-5 py-2 text-xs font-semibold transition ${tab==='requests'?'bg-[#176b4b] text-white':'text-[#718176] hover:bg-[#f1f5ef]'}`}>My requests ({requests.length})</button></div><button onClick={reset} className="inline-flex items-center gap-1.5 text-xs font-medium text-[#849087] hover:text-[#a34e43]"><RotateCcw size={13}/> Reset demo activity</button></div>
       {tab==='discover' ? <><div className="mb-5 flex flex-col gap-3 sm:flex-row"><label className="relative flex-1"><Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#94a096]"/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search food, donor or location..." className="h-12 w-full rounded-xl border border-[#e1e7dd] bg-white pl-11 pr-4 text-sm outline-none focus:border-[#78a17d]"/></label><select value={category} onChange={e=>setCategory(e.target.value)} className="h-12 rounded-xl border border-[#e1e7dd] bg-white px-4 text-sm text-[#496454] outline-none"><option>All</option><option>Prepared meals</option><option>Groceries</option><option>Fruits</option></select></div>
-      <section className="mb-5 overflow-hidden rounded-2xl border border-[#dfe7dc] bg-white shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#edf0e9] px-5 py-4">
-          <div><p className="text-[10px] font-bold tracking-[.18em] text-[#779578]">MANGALURU · DEMO MAP</p><h2 className="mt-1 text-lg font-semibold">Nearby food pickup points</h2><p className="mt-1 text-xs text-[#849087]">Select a pin to view a sample donor and open directions.</p></div>
-          <span className="rounded-full bg-[#edf4eb] px-3 py-1.5 text-[10px] font-bold text-[#4d7956]">4 SAMPLE LOCATIONS</span>
-        </div>
-        <div className="grid lg:grid-cols-[1.5fr_.8fr]">
-          <div className="relative min-h-[330px] overflow-hidden bg-[#e9eee2]">
-            <svg viewBox="0 0 760 390" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 h-full w-full" aria-label="Illustrated sample street map of Mangaluru">
-              <rect width="760" height="390" fill="#e9eee2"/>
-              <path d="M0 0H760V74C670 89 610 52 530 90S380 145 300 105 130 120 0 88Z" fill="#d7e8e7"/>
-              <path d="M-20 315C100 250 155 340 260 270S420 230 500 285 650 350 790 260" fill="none" stroke="#c5d9d5" strokeWidth="36"/>
-              <g fill="#dce8d4" stroke="#cbd9c4" strokeWidth="1">{Array.from({length:18},(_,i)=><rect key={i} x={(i%6)*132+12} y={Math.floor(i/6)*115+95} width="92" height="65" rx="12"/>)}</g>
-              <g fill="none" stroke="#fffdf7" strokeWidth="13" strokeLinecap="round"><path d="M-30 180L790 180"/><path d="M100 -20L170 420"/><path d="M360 -20L330 420"/><path d="M610 -20L550 420"/><path d="M-20 370L770 70"/><path d="M-20 60L780 330"/></g>
-              <g fill="none" stroke="#d2cbb8" strokeWidth="2" strokeLinecap="round"><path d="M-30 180L790 180"/><path d="M100 -20L170 420"/><path d="M360 -20L330 420"/><path d="M610 -20L550 420"/><path d="M-20 370L770 70"/><path d="M-20 60L780 330"/></g>
-              <g fill="#8b9b84" fontSize="12" fontWeight="600"><text x="24" y="34">MANGALURU</text><text x="40" y="158">Kadri</text><text x="220" y="245">Bejai</text><text x="435" y="120">Hampankatta</text><text x="600" y="290">Bendoor</text><text x="24" y="365" fontSize="10">Illustrative demo map · not live GPS</text></g>
-            </svg>
-            <svg viewBox="0 0 760 390" preserveAspectRatio="none" className="absolute inset-0 h-full w-full pointer-events-none"><path d="M140 160 Q240 120 300 220 T470 140 T620 270" fill="none" stroke="#43845d" strokeWidth="5" strokeDasharray="9 8" strokeLinecap="round" opacity=".8"/></svg>
-            {listings.map((item,index)=>{const coords=[{left:'18%',top:'37%'},{left:'39%',top:'61%'},{left:'64%',top:'34%'},{left:'81%',top:'72%'}][index];return <button key={item.id} onClick={()=>setSelectedMapId(item.id)} style={coords} className={`absolute z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1 rounded-full border-2 border-white px-2.5 py-2 text-[10px] font-bold shadow-lg transition ${selectedMapId===item.id?'scale-110 bg-[#176b4b] text-white':'bg-white text-[#286445] hover:scale-110'}`} aria-label={`Show ${item.donor} on map`}><MapPin size={14}/>{item.id}</button>})}
-            <div className="absolute bottom-3 right-3 rounded-xl border border-white/80 bg-white/90 px-3 py-2 text-[10px] text-[#63766a] shadow-sm">🟢 Sample donor pins · select a pin</div>
-          </div>
-          <div className="flex flex-col justify-between border-t border-[#edf0e9] p-5 lg:border-l lg:border-t-0">
-            {(()=>{const item=listings.find(x=>x.id===selectedMapId)??listings[0];return <><div><span className="rounded-full bg-[#edf4eb] px-2.5 py-1 text-[10px] font-bold text-[#4d7956]">SELECTED PICKUP</span><h3 className="mt-4 text-xl font-semibold">{item.name}</h3><p className="mt-1 text-xs text-[#849087]">{item.donor}</p><div className="mt-5 grid grid-cols-2 gap-3"><div className="rounded-xl bg-[#f7f8f3] p-3"><p className="text-[10px] text-[#849087]">Distance</p><p className="mt-1 font-semibold">{item.distance}</p></div><div className="rounded-xl bg-[#f7f8f3] p-3"><p className="text-[10px] text-[#849087]">Food quantity</p><p className="mt-1 font-semibold">{item.kg} kg</p></div></div><p className="mt-4 flex items-center gap-2 text-xs text-[#78877d]"><MapPin size={14}/>{item.area}</p><p className="mt-2 flex items-center gap-2 text-xs text-[#78877d]"><Clock3 size={14}/>{item.deadline}</p></div><a target="_blank" rel="noreferrer" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.area)}`} className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#176b4b] px-4 text-xs font-semibold text-white hover:bg-[#164c3b]"><Navigation size={15}/> Open pickup location <ArrowRight size={14}/></a></>})()}
-          </div>
-        </div>
-      </section>
+      <LiveDemoMap selectedMapId={selectedMapId} onSelect={setSelectedMapId} />
       <div className="grid gap-4 md:grid-cols-2">{filtered.map(item=><article key={item.id} className="rounded-2xl border border-[#e5e9df] bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-md"><div className="flex items-start justify-between gap-3"><div><span className="rounded-full bg-[#edf4eb] px-2.5 py-1 text-[10px] font-bold text-[#4d7956]">{item.category}</span><h2 className="mt-3 text-lg font-semibold tracking-tight">{item.name}</h2><p className="mt-1 text-xs text-[#849087]">Donated by {item.donor}</p></div><div className="rounded-xl bg-[#f0f5ed] px-3 py-2 text-center"><p className="text-lg font-bold text-[#286445]">{item.score}%</p><p className="text-[9px] font-bold tracking-wide text-[#81927f]">DEMO MATCH</p></div></div><div className="my-4 grid grid-cols-2 gap-3 rounded-xl bg-[#f8f9f5] p-3"><div><p className="text-[10px] text-[#8b978d]">Quantity</p><p className="mt-1 text-sm font-semibold">{item.kg} kg · {item.servings} servings</p></div><div><p className="text-[10px] text-[#8b978d]">Pickup by</p><p className="mt-1 flex items-center gap-1 text-sm font-semibold"><Clock3 size={13}/>{item.deadline}</p></div></div><div className="flex flex-wrap items-center justify-between gap-3"><p className="flex items-center gap-1.5 text-xs text-[#849087]"><MapPin size={14}/>{item.area} · {item.distance}</p><button disabled={requestedIds.has(item.id)} onClick={()=>requestFood(item.id)} className="rounded-full bg-[#176b4b] px-5 py-2.5 text-xs font-semibold text-white transition hover:bg-[#164c3b] disabled:cursor-default disabled:bg-[#e8efe6] disabled:text-[#54745a]">{requestedIds.has(item.id)?'Requested ✓':'Request food'}</button></div></article>)}</div>{filtered.length===0&&<div className="rounded-2xl border border-dashed border-[#dce4d9] bg-white p-12 text-center text-sm text-[#829087]">No sample listings match your search.</div>}</> : <div className="grid gap-4 md:grid-cols-2">{requests.length===0?<div className="col-span-full rounded-2xl border border-dashed border-[#dce4d9] bg-white p-12 text-center"><HeartHandshake className="mx-auto text-[#8ca98b]" size={30}/><h2 className="mt-3 font-semibold">No requests yet</h2><p className="mt-1 text-sm text-[#849087]">Explore available food and request a listing to see it here.</p><button onClick={()=>setTab('discover')} className="mt-4 rounded-full bg-[#176b4b] px-5 py-2.5 text-xs font-semibold text-white">Browse listings</button></div>:requests.map(request=>{const item=listings.find(x=>x.id===request.listingId)!;return <article key={item.id} className="rounded-2xl border border-[#e5e9df] bg-white p-5"><div className="flex items-center justify-between gap-3"><div><h2 className="font-semibold">{item.name}</h2><p className="mt-1 text-xs text-[#849087]">{item.donor} · {item.kg} kg</p></div><span className="rounded-full bg-[#edf4eb] px-3 py-1 text-[10px] font-bold text-[#4d7956]">{stages[request.status]}</span></div><div className="my-5 grid grid-cols-4 gap-1">{stages.map((stage,index)=><div key={stage}><div className={`h-1.5 rounded-full ${index<=request.status?'bg-[#4f8a60]':'bg-[#e7ebe4]'}`}/><p className="mt-2 text-[9px] text-[#849087]">{stage}</p></div>)}</div><p className="text-[11px] text-[#87938a]">Demo request · {request.requestedAt}</p><button disabled={request.status===3} onClick={()=>advance(item.id)} className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#cbdac9] px-4 py-2 text-xs font-semibold text-[#376b49] hover:bg-[#f1f6ef] disabled:opacity-50">{request.status===0?<><HeartHandshake size={14}/> Mark as accepted</>:request.status===1?<><PackageCheck size={14}/> Mark as picked up</>:request.status===2?<><Truck size={14}/> Mark as delivered</>:<><CheckCircle2 size={14}/> Completed</>}</button></article>})}</div>}
       <div className="mt-8 flex gap-3 rounded-2xl border border-[#e9e5d6] bg-[#fffdf6] p-4 text-xs leading-5 text-[#82785e]"><span className="mt-0.5 text-[#b18a3c]">ⓘ</span><p><strong>Demo environment:</strong> All food listings, donor names, match scores and pickup details are sample data. Requests and status changes are saved only in this browser. No real donor or NGO is contacted, and no real food pickup is arranged.</p></div>
     </div>
