@@ -368,3 +368,102 @@ button { cursor: pointer; }
 @media(prefers-reduced-motion:reduce) {
   .sharemeal-atmosphere::before { animation:none!important; }
 }
+
+
+/* NGO dashboard: vivid, slow-moving botanical atmosphere — no galaxy colours */
+.ngo-demo-scene {
+  background:
+    radial-gradient(ellipse at 8% 8%, #e2f0df 0%, transparent 38%),
+    radial-gradient(ellipse at 92% 20%, #f6ead7 0%, transparent 36%),
+    radial-gradient(ellipse at 55% 92%, #dcece5 0%, transparent 42%),
+    linear-gradient(125deg,#f5f8ef 0%,#f8f6ed 48%,#edf5ee 100%) !important;
+}
+.ngo-demo-atmosphere {
+  overflow:hidden;
+  isolation:isolate;
+  background:
+    radial-gradient(ellipse at 15% 20%,rgba(116,177,127,.24),transparent 40%),
+    radial-gradient(ellipse at 85% 32%,rgba(194,207,158,.22),transparent 42%),
+    radial-gradient(ellipse at 52% 85%,rgba(224,185,132,.2),transparent 42%);
+}
+.ngo-demo-atmosphere::before,
+.ngo-demo-atmosphere::after {
+  content:"";
+  position:absolute;
+  pointer-events:none;
+  border-radius:48%;
+  will-change:transform;
+}
+.ngo-demo-atmosphere::before {
+  width:min(78vw,1050px);height:min(78vw,1050px);
+  left:-20%;top:2%;
+  background:
+    radial-gradient(ellipse at 38% 42%,rgba(132,190,135,.42),transparent 58%),
+    radial-gradient(ellipse at 65% 65%,rgba(210,222,174,.34),transparent 56%);
+  filter:blur(18px);
+  animation:ngo-meadow-drift 22s ease-in-out infinite alternate;
+}
+.ngo-demo-atmosphere::after {
+  width:min(72vw,960px);height:min(72vw,960px);
+  right:-18%;top:16%;
+  background:
+    radial-gradient(ellipse at 45% 40%,rgba(232,204,157,.4),transparent 58%),
+    radial-gradient(ellipse at 62% 62%,rgba(157,199,174,.34),transparent 58%);
+  filter:blur(22px);
+  animation:ngo-sunwash-drift 27s ease-in-out infinite alternate;
+}
+.ngo-orb { filter:blur(1px) !important;opacity:.95 !important; }
+.ngo-orb-one {
+  width:clamp(340px,42vw,680px) !important;height:clamp(340px,42vw,680px) !important;
+  left:-12% !important;top:10% !important;
+  background:radial-gradient(circle at 42% 42%,rgba(103,169,113,.43),rgba(163,205,151,.2) 38%,transparent 72%) !important;
+  animation:ngo-float-one 17s ease-in-out infinite alternate !important;
+}
+.ngo-orb-two {
+  width:clamp(380px,48vw,760px) !important;height:clamp(380px,48vw,760px) !important;
+  right:-17% !important;top:24% !important;
+  background:radial-gradient(circle at 50% 50%,rgba(207,190,135,.34),rgba(176,207,171,.2) 42%,transparent 73%) !important;
+  animation:ngo-float-two 21s ease-in-out infinite alternate !important;
+}
+.ngo-orb-three {
+  width:clamp(300px,36vw,560px) !important;height:clamp(300px,36vw,560px) !important;
+  left:30% !important;bottom:-14% !important;
+  background:radial-gradient(circle,rgba(226,185,132,.32),rgba(172,204,166,.18) 45%,transparent 74%) !important;
+  animation:ngo-float-three 19s ease-in-out infinite alternate !important;
+}
+.ngo-glow-line {
+  height:2px !important;opacity:.55 !important;
+  background:linear-gradient(90deg,transparent,rgba(93,151,103,.48),rgba(215,183,126,.38),transparent) !important;
+  filter:blur(.4px);
+}
+.ngo-demo-atmosphere .ngo-leaf {
+  position:absolute;
+  z-index:3;
+  display:block;
+  opacity:.76;
+  filter:drop-shadow(0 12px 12px rgba(45,91,52,.18)) saturate(1.08);
+  animation:ngo-leaf-sail 24s ease-in-out infinite;
+  will-change:transform;
+}
+.ngo-demo-atmosphere .ngo-leaf:nth-child(4n+1) { left:8%;top:14%;--leaf-size:62px;animation-delay:-4s;animation-duration:29s; }
+.ngo-demo-atmosphere .ngo-leaf:nth-child(4n+2) { left:78%;top:23%;--leaf-size:46px;animation-delay:-17s;animation-duration:25s; }
+.ngo-demo-atmosphere .ngo-leaf:nth-child(4n+3) { left:48%;top:66%;--leaf-size:72px;animation-delay:-10s;animation-duration:32s; }
+.ngo-demo-atmosphere .ngo-leaf:nth-child(4n) { left:90%;top:76%;--leaf-size:38px;animation-delay:-22s;animation-duration:27s; }
+@keyframes ngo-meadow-drift {
+  0%{transform:translate3d(-5%,0,0) rotate(-8deg) scale(.88)}
+  50%{transform:translate3d(7%,8%,0) rotate(8deg) scale(1.08)}
+  100%{transform:translate3d(13%,-4%,0) rotate(15deg) scale(.96)}
+}
+@keyframes ngo-sunwash-drift {
+  0%{transform:translate3d(8%,-4%,0) rotate(12deg) scale(1.05)}
+  50%{transform:translate3d(-8%,8%,0) rotate(-8deg) scale(.9)}
+  100%{transform:translate3d(-13%,-5%,0) rotate(-16deg) scale(1.1)}
+}
+@keyframes ngo-leaf-sail {
+  0%,100%{transform:translate3d(0,-18px,0) rotate(-16deg) scale(.9)}
+  35%{transform:translate3d(42px,38px,0) rotate(24deg) scale(1.08)}
+  70%{transform:translate3d(-26px,72px,0) rotate(-8deg) scale(.96)}
+}
+@media(prefers-reduced-motion:reduce) {
+  .ngo-demo-atmosphere::before,.ngo-demo-atmosphere::after,.ngo-orb,.ngo-glow-line,.ngo-demo-atmosphere .ngo-leaf { animation:none!important; }
+}
