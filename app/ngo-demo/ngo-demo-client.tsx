@@ -95,7 +95,8 @@ export default function NgoDemoClient() {
   function advance(id: number) { setRequests(current => current.map(item => item.listingId === id ? { ...item, status: Math.min(item.status + 1, 3) } : item)) }
   function reset() { setRequests([]); localStorage.removeItem(storageKey) }
 
-  return <main className="min-h-screen bg-[#f7f7f1] text-[#193b30]">
+  return <main className="ngo-demo-scene relative isolate min-h-screen overflow-hidden text-[#193b30]">
+    <div aria-hidden="true" className="ngo-demo-atmosphere pointer-events-none absolute inset-0 -z-10 overflow-hidden"><span className="ngo-orb ngo-orb-one"/><span className="ngo-orb ngo-orb-two"/><span className="ngo-orb ngo-orb-three"/><span className="ngo-glow-line ngo-glow-line-one"/><span className="ngo-glow-line ngo-glow-line-two"/></div>
     <header className="border-b border-[#e5e9df] bg-white/90">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
         <Link href="/" className="flex items-center gap-2 text-lg font-bold tracking-tight"><span className="flex size-9 items-center justify-center rounded-xl bg-[#eaf2e8] text-[#176b4b]"><Leaf size={19}/></span>SHAREMEAL<span className="text-[#8cac83]">.</span></Link>
