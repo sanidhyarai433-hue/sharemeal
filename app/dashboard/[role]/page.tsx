@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { ArrowLeft, Leaf, LogOut, ShieldCheck, Truck, Utensils } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import DashboardPanel from '../dashboard-motion'
+import NgoLiveDashboard from '../ngo-live-dashboard'
 
 export const metadata: Metadata = { title: 'Your SHAREMEAL space' }
 const roles = {
@@ -23,6 +24,7 @@ export default async function RoleDashboardPage({ params }: { params: Promise<{ 
   if (!profile || profile.role !== roleKey) redirect('/dashboard')
   const { title, description, icon: RoleIcon } = roles[roleKey]
   const name = profile.full_name?.trim().split(/\s+/)[0] || 'friend'
+  if (roleKey === 'ngo') return <NgoLiveDashboard />
   return <main className="min-h-screen bg-[#faf9f5] px-5 py-8 text-[#193b30] sm:px-8 sm:py-12">
     <div className="mx-auto max-w-[860px]">
       <header className="flex items-center justify-between"><Link href="/" className="flex items-center gap-2 text-lg font-semibold tracking-[-.05em]"><span className="flex size-9 items-center justify-center rounded-xl bg-[#e6efe5] text-[#176b4b]"><Leaf size={18} /></span>SHAREMEAL</Link><form action="/auth/signout" method="post"><button className="inline-flex items-center gap-2 rounded-full border border-[#dfe5dc] bg-white px-4 py-2 text-xs font-semibold text-[#53665d] hover:border-[#176b4b]"><LogOut size={14} /> Log out</button></form></header>
