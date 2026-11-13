@@ -87,12 +87,19 @@ export default function ShareMealHome() {
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
   const [introVisible, setIntroVisible] = useState(true)
+  const [introBackdrop, setIntroBackdrop] = useState(true)
 
   useEffect(() => {
-    if (reduceMotion) { setIntroVisible(false); return }
+    if (reduceMotion) { setIntroVisible(false); setIntroBackdrop(false); return }
     const timer = window.setTimeout(() => setIntroVisible(false), 4600)
-    return () => window.clearTimeout(timer)
+    const backdropTimer = window.setTimeout(() => setIntroBackdrop(false), 5650)
+    return () => { window.clearTimeout(timer); window.clearTimeout(backdropTimer) }
   }, [reduceMotion])
+
+  function closeIntro() {
+    setIntroVisible(false)
+    window.setTimeout(() => setIntroBackdrop(false), 1000)
+  }
 
   async function loadAccount() {
     const { data: { user: currentUser } } = await supabase.auth.getUser()
@@ -176,6 +183,7 @@ export default function ShareMealHome() {
   const viewport = { once: true, amount: 0.16 }
 
   return <main className="sharemeal-atmosphere relative isolate min-h-screen overflow-hidden bg-[#faf9f5] text-[#193b30]">
+    {introBackdrop && <div aria-hidden="true" className="fixed inset-0 z-[9998] bg-[#102f25]" />}
     <AnimatePresence>
       {introVisible && <motion.div
         key="SHAREMEAL-fullscreen-intro"
@@ -212,7 +220,7 @@ export default function ShareMealHome() {
           <motion.div initial={{scaleX:0,opacity:0}} animate={{scaleX:1,opacity:1}} transition={{delay:1.8,duration:1}} className="mt-9 h-px w-52 origin-center bg-gradient-to-r from-transparent via-[#b7d59c] to-transparent" />
           <motion.p initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:2.15,duration:.9}} className="mt-5 text-sm tracking-wide text-[#e1e9d9]/80 sm:text-base">A little care goes a long way.</motion.p>
         </div>
-        <button type="button" onClick={() => setIntroVisible(false)} className="absolute bottom-7 right-7 z-20 rounded-full border border-white/25 bg-white/10 px-5 py-2.5 text-xs font-semibold text-white/90 backdrop-blur-xl transition hover:bg-white/20">Enter SHAREMEAL <ArrowRight className="ml-2 inline" size={14}/></button>
+        <button type="button" onClick={closeIntro} className="absolute bottom-7 right-7 z-20 rounded-full border border-white/25 bg-white/10 px-5 py-2.5 text-xs font-semibold text-white/90 backdrop-blur-xl transition hover:bg-white/20">Enter SHAREMEAL <ArrowRight className="ml-2 inline" size={14}/></button>
       </motion.div>}
     </AnimatePresence>
     <PublicScrollEnhancer />
