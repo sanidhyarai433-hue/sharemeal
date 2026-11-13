@@ -180,8 +180,8 @@ export default function ShareMealHome() {
       {introVisible && <motion.div
         key="SHAREMEAL-fullscreen-intro"
         initial={{ opacity: 1 }}
-        exit={{ opacity: 0, scale: 1.025, filter: 'blur(12px)' }}
-        transition={{ duration: 1, ease: 'easeInOut' }}
+        exit={{ opacity: 0, scale: 0.72, rotateX: 9, filter: 'blur(2px)', clipPath: 'inset(3% 3% 3% 3% round 42px)' }}
+        transition={{ duration: 0.95, ease: [0.7, 0, 0.2, 1] }}
         className="fixed inset-0 z-[9999] flex min-h-[100svh] w-screen items-center justify-center overflow-hidden bg-[#102f25] text-white"
         aria-label="SHAREMEAL brand introduction"
       >
