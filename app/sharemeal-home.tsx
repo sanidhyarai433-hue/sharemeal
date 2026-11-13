@@ -70,6 +70,13 @@ export default function ShareMealHome() {
   const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
+  const [introVisible, setIntroVisible] = useState(true)
+
+  useEffect(() => {
+    if (reduceMotion) { setIntroVisible(false); return }
+    const timer = window.setTimeout(() => setIntroVisible(false), 2900)
+    return () => window.clearTimeout(timer)
+  }, [reduceMotion])
 
   async function loadAccount() {
     const { data: { user: currentUser } } = await supabase.auth.getUser()
@@ -153,6 +160,39 @@ export default function ShareMealHome() {
   const viewport = { once: true, amount: 0.16 }
 
   return <main className="sharemeal-atmosphere relative isolate min-h-screen overflow-hidden bg-[#faf9f5] text-[#193b30]">
+    <AnimatePresence>
+      {introVisible && <motion.div
+        key="SHAREMEAL-intro-overlay"
+        initial={{ opacity: 1 }}
+        exit={{ opacity: 0, scale: 1.035, filter: 'blur(8px)' }}
+        transition={{ duration: 0.8, ease: 'easeInOut' }}
+        className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_50%_45%,#f5f7ec_0%,#e7efe3_48%,#d9e8dc_100%)]"
+        aria-label="SHAREMEAL introduction"
+      >
+        <div className="pointer-events-none absolute inset-0 opacity-70" style={{backgroundImage:'radial-gradient(circle at 18% 22%,rgba(255,255,255,.9),transparent 28%),radial-gradient(circle at 82% 76%,rgba(179,207,177,.55),transparent 32%)'}} />
+        <motion.div aria-hidden="true" className="absolute left-[18%] top-[20%] text-[#4d9364]" animate={{x:[0,90,-30,0],y:[0,75,150,0],rotate:[-25,35,100,335],scale:[.8,1.1,.9,.8]}} transition={{duration:7,repeat:Infinity,ease:'easeInOut'}}><Leaf size={38}/></motion.div>
+        <motion.div aria-hidden="true" className="absolute right-[18%] top-[24%] text-[#79a77a]" animate={{x:[0,-75,25,0],y:[0,100,45,0],rotate:[30,-45,25,390]}} transition={{duration:8,repeat:Infinity,ease:'easeInOut',delay:.3}}><Leaf size={54}/></motion.div>
+        <motion.div aria-hidden="true" className="absolute bottom-[19%] left-[27%] text-[#9bbd91]" animate={{x:[0,80,-25,0],y:[0,-90,-30,0],rotate:[0,130,260,360]}} transition={{duration:9,repeat:Infinity,ease:'easeInOut',delay:.8}}><Leaf size={30}/></motion.div>
+        <motion.div aria-hidden="true" className="absolute bottom-[20%] right-[25%] text-[#538b63]" animate={{x:[0,-65,30,0],y:[0,-80,-10,0],rotate:[0,-100,-230,-360]}} transition={{duration:7.5,repeat:Infinity,ease:'easeInOut',delay:1}}><Leaf size={42}/></motion.div>
+        <div className="relative z-10 flex flex-col items-center px-6 text-center">
+          <motion.div
+            initial={{scale:.35,rotateY:-160,rotateX:35,opacity:0}}
+            animate={{scale:[.35,1.12,1],rotateY:[-160,390,720],rotateX:[35,0,0],opacity:1}}
+            transition={{duration:2.05,ease:[.16,1,.3,1]}}
+            style={{perspective:900,transformStyle:'preserve-3d'}}
+            className="relative mb-7 flex size-28 items-center justify-center rounded-[34px] border border-white/80 bg-gradient-to-br from-[#fafff7] via-[#d9ead9] to-[#8eb99a] text-[#176b4b] shadow-[0_24px_65px_rgba(35,91,57,.24)]"
+          >
+            <motion.div animate={{rotateZ:[0,360]}} transition={{duration:3.2,ease:'easeInOut'}}><Leaf size={58} strokeWidth={1.65}/></motion.div>
+            <span className="absolute -right-2 -top-2 size-5 rounded-full border-2 border-white bg-[#b7d5a8] shadow-md"/>
+          </motion.div>
+          <motion.p initial={{opacity:0,y:14,letterSpacing:'.35em'}} animate={{opacity:1,y:0,letterSpacing:'.16em'}} transition={{delay:.7,duration:.8}} className="text-2xl font-semibold text-[#193b30] sm:text-3xl">SHAREMEAL<span className="text-[#43835a]">.</span></motion.p>
+          <motion.p initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:1.05,duration:.7}} className="mt-3 text-[10px] font-semibold tracking-[.28em] text-[#66816d] sm:text-xs">GOOD FOOD. GREATER IMPACT.</motion.p>
+          <motion.div initial={{scaleX:0,opacity:0}} animate={{scaleX:1,opacity:1}} transition={{delay:1.25,duration:.8}} className="mt-7 h-px w-36 origin-center bg-gradient-to-r from-transparent via-[#7fa889] to-transparent"/>
+          <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1.45,duration:.7}} className="mt-4 text-sm text-[#688071]">A little care goes a long way.</motion.p>
+        </div>
+        <button type="button" onClick={() => setIntroVisible(false)} className="absolute bottom-7 right-7 rounded-full border border-[#cbdacb] bg-white/60 px-4 py-2 text-xs font-semibold text-[#496b55] backdrop-blur-md transition hover:bg-white">Skip intro</button>
+      </motion.div>}
+    </AnimatePresence>
     <PublicScrollEnhancer />
     <div className="bg-[#164c3b] px-4 py-2 text-center text-[10px] font-semibold tracking-[.13em] text-white/90 sm:text-xs">RESCUE FOOD <span className="mx-2 text-[#b7d1ba]">·</span> SHARE HOPE <span className="mx-2 text-[#b7d1ba]">·</span> MAKE EVERY MEAL COUNT</div>
     <header className="sticky top-0 z-30 border-b border-[#e8eae2]/70 bg-[#faf9f5]/90 backdrop-blur-xl">
