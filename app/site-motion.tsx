@@ -9,7 +9,7 @@ export function SiteMotion({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   return <MotionConfig reducedMotion="user">
     <AnimatePresence mode="sync" initial={false}>
-      <motion.div key={pathname} className="min-h-screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }}>
+      <motion.div key={pathname} className="min-h-screen bg-[#faf9f5]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }}>
         {children}
       </motion.div>
     </AnimatePresence>
