@@ -28,6 +28,22 @@ const steps = [
   { icon: HandHeart, title: 'A meal, shared', text: 'Good food reaches the people and families who need it most.' },
 ]
 
+
+function IntroLeaf({ className = '' }: { className?: string }) {
+  return <svg className={className} viewBox="0 0 120 120" fill="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="intro-leaf-body" x1="20" y1="98" x2="100" y2="12" gradientUnits="userSpaceOnUse"><stop stopColor="#164D36"/><stop offset=".38" stopColor="#3D8653"/><stop offset=".72" stopColor="#91C47B"/><stop offset="1" stopColor="#D8E9B8"/></linearGradient>
+      <linearGradient id="intro-leaf-light" x1="28" y1="88" x2="86" y2="25" gradientUnits="userSpaceOnUse"><stop stopColor="#D5E9B5" stopOpacity=".08"/><stop offset=".55" stopColor="#F4F7D9" stopOpacity=".55"/><stop offset="1" stopColor="#FFFFFF" stopOpacity=".78"/></linearGradient>
+      <filter id="intro-leaf-shadow" x="0" y="0" width="120" height="120" filterUnits="userSpaceOnUse"><feGaussianBlur stdDeviation="2.2"/></filter>
+    </defs>
+    <path d="M18 101C23 68 31 36 96 12C104 65 81 99 18 101Z" fill="#061F17" opacity=".34" filter="url(#intro-leaf-shadow)" transform="translate(2 4)"/>
+    <path d="M15 103C20 70 29 35 96 11C105 65 81 100 15 103Z" fill="url(#intro-leaf-body)" stroke="#D8E8C5" strokeOpacity=".72" strokeWidth="1.7"/>
+    <path d="M17 101C41 79 62 51 94 14" stroke="url(#intro-leaf-light)" strokeWidth="2.4" strokeLinecap="round"/>
+    <path d="M36 84C34 69 32 60 27 52M49 70C51 57 54 47 62 36M61 57C73 56 82 52 89 45M42 78C54 78 65 74 74 66M27 94C27 82 23 75 19 69" stroke="#D9EBC3" strokeOpacity=".72" strokeWidth="1.35" strokeLinecap="round"/>
+    <path d="M15 103C12 108 9 111 5 114" stroke="#A8C98D" strokeWidth="3" strokeLinecap="round"/>
+    <path d="M19 100C36 83 59 53 94 14" stroke="#F5F8DF" strokeOpacity=".22" strokeWidth="5" strokeLinecap="round"/>
+  </svg>
+}
 function AnimatedCount({ value, suffix = '' }: { value: number; suffix?: string }) {
   const elementRef = useRef<HTMLSpanElement>(null)
   const isVisible = useInView(elementRef, { once: true, margin: '0px 0px -10% 0px' })
@@ -74,7 +90,7 @@ export default function ShareMealHome() {
 
   useEffect(() => {
     if (reduceMotion) { setIntroVisible(false); return }
-    const timer = window.setTimeout(() => setIntroVisible(false), 2900)
+    const timer = window.setTimeout(() => setIntroVisible(false), 4600)
     return () => window.clearTimeout(timer)
   }, [reduceMotion])
 
@@ -162,35 +178,41 @@ export default function ShareMealHome() {
   return <main className="sharemeal-atmosphere relative isolate min-h-screen overflow-hidden bg-[#faf9f5] text-[#193b30]">
     <AnimatePresence>
       {introVisible && <motion.div
-        key="SHAREMEAL-intro-overlay"
+        key="SHAREMEAL-fullscreen-intro"
         initial={{ opacity: 1 }}
-        exit={{ opacity: 0, scale: 1.035, filter: 'blur(8px)' }}
-        transition={{ duration: 0.8, ease: 'easeInOut' }}
-        className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_50%_45%,#f5f7ec_0%,#e7efe3_48%,#d9e8dc_100%)]"
-        aria-label="SHAREMEAL introduction"
+        exit={{ opacity: 0, scale: 1.025, filter: 'blur(12px)' }}
+        transition={{ duration: 1, ease: 'easeInOut' }}
+        className="fixed inset-0 z-[9999] flex min-h-[100svh] w-screen items-center justify-center overflow-hidden bg-[#102f25] text-white"
+        aria-label="SHAREMEAL brand introduction"
       >
-        <div className="pointer-events-none absolute inset-0 opacity-70" style={{backgroundImage:'radial-gradient(circle at 18% 22%,rgba(255,255,255,.9),transparent 28%),radial-gradient(circle at 82% 76%,rgba(179,207,177,.55),transparent 32%)'}} />
-        <motion.div aria-hidden="true" className="absolute left-[18%] top-[20%] text-[#4d9364]" animate={{x:[0,90,-30,0],y:[0,75,150,0],rotate:[-25,35,100,335],scale:[.8,1.1,.9,.8]}} transition={{duration:7,repeat:Infinity,ease:'easeInOut'}}><Leaf size={38}/></motion.div>
-        <motion.div aria-hidden="true" className="absolute right-[18%] top-[24%] text-[#79a77a]" animate={{x:[0,-75,25,0],y:[0,100,45,0],rotate:[30,-45,25,390]}} transition={{duration:8,repeat:Infinity,ease:'easeInOut',delay:.3}}><Leaf size={54}/></motion.div>
-        <motion.div aria-hidden="true" className="absolute bottom-[19%] left-[27%] text-[#9bbd91]" animate={{x:[0,80,-25,0],y:[0,-90,-30,0],rotate:[0,130,260,360]}} transition={{duration:9,repeat:Infinity,ease:'easeInOut',delay:.8}}><Leaf size={30}/></motion.div>
-        <motion.div aria-hidden="true" className="absolute bottom-[20%] right-[25%] text-[#538b63]" animate={{x:[0,-65,30,0],y:[0,-80,-10,0],rotate:[0,-100,-230,-360]}} transition={{duration:7.5,repeat:Infinity,ease:'easeInOut',delay:1}}><Leaf size={42}/></motion.div>
-        <div className="relative z-10 flex flex-col items-center px-6 text-center">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_42%,#315f49_0%,#1b4937_42%,#102f25_100%)]" />
+        <div className="sharemeal-intro-grain absolute inset-0 opacity-30" />
+        <div className="pointer-events-none absolute -left-32 top-[-18%] h-[70vh] w-[42vw] rounded-full bg-[#8ba77b]/15 blur-[100px]" />
+        <div className="pointer-events-none absolute -right-32 bottom-[-20%] h-[75vh] w-[48vw] rounded-full bg-[#c4a86e]/10 blur-[110px]" />
+        <motion.div aria-hidden="true" className="absolute left-[8%] top-[16%] text-[#a9c89b]/75" animate={{ x:[0,70,-15,0], y:[0,95,155,0], rotate:[-20,35,115,340] }} transition={{duration:13,repeat:Infinity,ease:'easeInOut'}}><IntroLeaf className="h-20 w-20" /></motion.div>
+        <motion.div aria-hidden="true" className="absolute right-[10%] top-[18%] text-[#c0d5a9]/70" animate={{ x:[0,-85,15,0], y:[0,115,55,0], rotate:[25,-55,35,385] }} transition={{duration:16,repeat:Infinity,ease:'easeInOut',delay:.6}}><IntroLeaf className="h-28 w-28" /></motion.div>
+        <motion.div aria-hidden="true" className="absolute bottom-[10%] left-[20%] text-[#7fae85]/65" animate={{ x:[0,90,-20,0], y:[0,-80,-20,0], rotate:[0,125,250,360] }} transition={{duration:17,repeat:Infinity,ease:'easeInOut',delay:1}}><IntroLeaf className="h-14 w-14" /></motion.div>
+        <motion.div aria-hidden="true" className="absolute bottom-[14%] right-[21%] text-[#b6c99b]/75" animate={{ x:[0,-70,25,0], y:[0,-90,-10,0], rotate:[0,-100,-220,-360] }} transition={{duration:14,repeat:Infinity,ease:'easeInOut',delay:1.3}}><IntroLeaf className="h-16 w-16" /></motion.div>
+        <div className="relative z-10 flex w-full max-w-3xl flex-col items-center px-6 text-center">
           <motion.div
-            initial={{scale:.35,rotateY:-160,rotateX:35,opacity:0}}
-            animate={{scale:[.35,1.12,1],rotateY:[-160,390,720],rotateX:[35,0,0],opacity:1}}
-            transition={{duration:2.05,ease:[.16,1,.3,1]}}
-            style={{perspective:900,transformStyle:'preserve-3d'}}
-            className="relative mb-7 flex size-28 items-center justify-center rounded-[34px] border border-white/80 bg-gradient-to-br from-[#fafff7] via-[#d9ead9] to-[#8eb99a] text-[#176b4b] shadow-[0_24px_65px_rgba(35,91,57,.24)]"
+            initial={{ opacity:0, scale:.45, rotateY:-150, rotateX:28 }}
+            animate={{ opacity:1, scale:[.45,1.08,1], rotateY:[-150,25,0], rotateX:[28,0,0] }}
+            transition={{ duration:2.1, ease:[.16,1,.3,1] }}
+            style={{ perspective:1200, transformStyle:'preserve-3d' }}
+            className="relative mb-10 flex h-40 w-40 items-center justify-center rounded-[42px] border border-white/25 bg-gradient-to-br from-[#e6f0dd] via-[#a8c69c] to-[#386f50] shadow-[0_35px_100px_rgba(0,0,0,.38),inset_0_2px_4px_rgba(255,255,255,.8),inset_0_-12px_24px_rgba(18,61,39,.3)] sm:h-48 sm:w-48"
           >
-            <motion.div animate={{rotateZ:[0,360]}} transition={{duration:3.2,ease:'easeInOut'}}><Leaf size={58} strokeWidth={1.65}/></motion.div>
-            <span className="absolute -right-2 -top-2 size-5 rounded-full border-2 border-white bg-[#b7d5a8] shadow-md"/>
+            <div className="absolute inset-[7px] rounded-[35px] border border-white/35" />
+            <motion.div animate={{ rotateY:[0,360], rotateZ:[-8,8,-8] }} transition={{duration:8,repeat:Infinity,ease:'easeInOut'}} className="relative drop-shadow-[0_12px_14px_rgba(14,50,32,.42)]">
+              <IntroLeaf className="h-24 w-24 sm:h-32 sm:w-32" />
+            </motion.div>
+            <span className="absolute -right-3 top-7 h-7 w-7 rounded-full border border-white/70 bg-gradient-to-br from-[#f5f2d7] to-[#8fbf83] shadow-[0_8px_22px_rgba(0,0,0,.3)]" />
           </motion.div>
-          <motion.p initial={{opacity:0,y:14,letterSpacing:'.35em'}} animate={{opacity:1,y:0,letterSpacing:'.16em'}} transition={{delay:.7,duration:.8}} className="text-2xl font-semibold text-[#193b30] sm:text-3xl">SHAREMEAL<span className="text-[#43835a]">.</span></motion.p>
-          <motion.p initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:1.05,duration:.7}} className="mt-3 text-[10px] font-semibold tracking-[.28em] text-[#66816d] sm:text-xs">GOOD FOOD. GREATER IMPACT.</motion.p>
-          <motion.div initial={{scaleX:0,opacity:0}} animate={{scaleX:1,opacity:1}} transition={{delay:1.25,duration:.8}} className="mt-7 h-px w-36 origin-center bg-gradient-to-r from-transparent via-[#7fa889] to-transparent"/>
-          <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1.45,duration:.7}} className="mt-4 text-sm text-[#688071]">A little care goes a long way.</motion.p>
+          <motion.p initial={{opacity:0,y:24,letterSpacing:'.42em'}} animate={{opacity:1,y:0,letterSpacing:'.19em'}} transition={{delay:.85,duration:1}} className="text-3xl font-semibold text-[#f7f4e9] sm:text-5xl">SHAREMEAL<span className="text-[#b7d59c]">.</span></motion.p>
+          <motion.p initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{delay:1.35,duration:.9}} className="mt-5 text-[10px] font-semibold tracking-[.34em] text-[#d0dfc4] sm:text-sm">GOOD FOOD. GREATER IMPACT.</motion.p>
+          <motion.div initial={{scaleX:0,opacity:0}} animate={{scaleX:1,opacity:1}} transition={{delay:1.8,duration:1}} className="mt-9 h-px w-52 origin-center bg-gradient-to-r from-transparent via-[#b7d59c] to-transparent" />
+          <motion.p initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:2.15,duration:.9}} className="mt-5 text-sm tracking-wide text-[#e1e9d9]/80 sm:text-base">A little care goes a long way.</motion.p>
         </div>
-        <button type="button" onClick={() => setIntroVisible(false)} className="absolute bottom-7 right-7 rounded-full border border-[#cbdacb] bg-white/60 px-4 py-2 text-xs font-semibold text-[#496b55] backdrop-blur-md transition hover:bg-white">Skip intro</button>
+        <button type="button" onClick={() => setIntroVisible(false)} className="absolute bottom-7 right-7 z-20 rounded-full border border-white/25 bg-white/10 px-5 py-2.5 text-xs font-semibold text-white/90 backdrop-blur-xl transition hover:bg-white/20">Enter SHAREMEAL <ArrowRight className="ml-2 inline" size={14}/></button>
       </motion.div>}
     </AnimatePresence>
     <PublicScrollEnhancer />
