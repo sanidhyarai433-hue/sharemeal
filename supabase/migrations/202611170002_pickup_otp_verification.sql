@@ -90,7 +90,7 @@ begin
 
   if v_record.code_hash <> extensions.digest(p_code, 'sha256') then
     update public.pickup_verification_codes set attempts = attempts + 1 where id = v_record.id;
-    raise exception 'Incorrect pickup code';
+    return false;
   end if;
 
   if not exists (
