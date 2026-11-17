@@ -107,10 +107,10 @@ export default function ShareMealHome() {
     const { data: { user: currentUser } } = await supabase.auth.getUser()
     setUser(currentUser ? { id: currentUser.id, email: currentUser.email } : null)
     if (!currentUser) { setProfile(null); setDonations([]); return }
-    const [{ data: profileData }, { data: donationData }] = await Promise.all([
-      supabase.from('profiles').select('id,full_name,role,organization_name').eq('id', currentUser.id).maybeSingle(),
-      supabase.from('donations').select('id,food_name,category,quantity_kg,servings,food_type,pickup_deadline,pickup_address,status,created_at,prepared_at,safe_until,storage_type,storage_temperature,safety_status').eq('donor_id', currentUser.id).order('created_at', { ascending: false }).limit(5),
-    ])
+    const { data: profileData } = await supabase.from('profiles').select('id,full_name,role,organization_name').eq('id', currentUser.id).maybeSingle()
+    let donationQuery = supabase.from('donations').select('id,food_name,category,quantity_kg,servings,food_type,pickup_deadline,pickup_address,status,created_at,prepared_at,safe_until,storage_type,storage_temperature,safety_status').order('created_at', { ascending: false }).limit(10)
+    if (profileData?.role !== 'ngo') donationQuery = donationQuery.eq('donor_id', currentUser.id)
+    const { data: donationData } = await donationQuery
     setProfile(profileData as Profile | null)
     setDonations((donationData ?? []) as Donation[])
   }
@@ -120,10 +120,10 @@ export default function ShareMealHome() {
     supabase.auth.getUser().then(async ({ data }) => {
       if (!active || !data.user) return
       setUser({ id: data.user.id, email: data.user.email })
-      const [{ data: profileData }, { data: donationData }] = await Promise.all([
-        supabase.from('profiles').select('id,full_name,role,organization_name').eq('id', data.user.id).maybeSingle(),
-        supabase.from('donations').select('id,food_name,category,quantity_kg,servings,food_type,pickup_deadline,pickup_address,status,created_at,prepared_at,safe_until,storage_type,storage_temperature,safety_status').eq('donor_id', data.user.id).order('created_at', { ascending: false }).limit(5),
-      ])
+      const { data: profileData } = await supabase.from('profiles').select('id,full_name,role,organization_name').eq('id', data.user.id).maybeSingle()
+      let donationQuery = supabase.from('donations').select('id,food_name,category,quantity_kg,servings,food_type,pickup_deadline,pickup_address,status,created_at,prepared_at,safe_until,storage_type,storage_temperature,safety_status').order('created_at', { ascending: false }).limit(10)
+      if (profileData?.role !== 'ngo') donationQuery = donationQuery.eq('donor_id', data.user.id)
+      const { data: donationData } = await donationQuery
       if (active) { setProfile(profileData as Profile | null); setDonations((donationData ?? []) as Donation[]) }
     })
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
