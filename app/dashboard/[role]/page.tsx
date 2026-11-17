@@ -5,6 +5,7 @@ import { ArrowLeft, Leaf, LogOut, ShieldCheck, Truck, Utensils } from 'lucide-re
 import { createClient } from '@/lib/supabase/server'
 import DashboardPanel from '../dashboard-motion'
 import NgoDemoClient from '@/app/ngo-demo/ngo-demo-client'
+import PickupVerification from '../pickup-verification'
 
 export const metadata: Metadata = { title: 'Your SHAREMEAL space' }
 const roles = {
@@ -36,6 +37,7 @@ export default async function RoleDashboardPage({ params }: { params: Promise<{ 
         <p className="mt-3 max-w-[550px] text-sm leading-6 text-[#77847c]">{description} {profile.organization_name ? `You’re representing ${profile.organization_name}.` : ''}</p>
         <div className="mt-8 flex flex-wrap gap-3">{roleKey === 'donor' ? <Link href="/#community" className="inline-flex h-11 items-center gap-2 rounded-full bg-[#176b4b] px-5 text-sm font-semibold text-white hover:bg-[#164c3b]">Share a food donation</Link> : <Link href="/" className="inline-flex h-11 items-center gap-2 rounded-full bg-[#176b4b] px-5 text-sm font-semibold text-white hover:bg-[#164c3b]">Explore SHAREMEAL</Link>}<Link href="/" className="inline-flex h-11 items-center gap-2 rounded-full border border-[#dfe5dc] px-5 text-sm font-semibold text-[#52685c] hover:border-[#a9c1aa]"><ArrowLeft size={15} /> Back to home</Link></div>
       </DashboardPanel>
+      {roleKey === 'volunteer' && <PickupVerification />}
       <p className="mt-5 text-center text-[11px] text-[#859188]">Role access is checked from your verified account on the server.</p>
     </div>
   </main>
